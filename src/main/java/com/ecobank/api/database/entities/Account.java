@@ -1,4 +1,4 @@
-package com.ecobank.api.entities;
+package com.ecobank.api.database.entities;
 
 import jakarta.persistence.*;
 
@@ -23,7 +23,7 @@ public class Account {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = true)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
 }

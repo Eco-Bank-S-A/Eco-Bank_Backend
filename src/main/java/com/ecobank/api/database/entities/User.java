@@ -1,7 +1,15 @@
-package com.ecobank.api.entities;
+package com.ecobank.api.database.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Data
 @Entity
 @Table(name = "users")
 public class User {
@@ -13,6 +21,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String pesel;
+    private String phone;
 
 
     private String email;
@@ -20,4 +29,5 @@ public class User {
 
 
     private Long CO2;
+    private Long maxCO2;
 }

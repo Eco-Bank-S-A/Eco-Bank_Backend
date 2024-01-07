@@ -1,4 +1,4 @@
-package com.ecobank.api.entities;
+package com.ecobank.api.database.entities;
 
 import jakarta.persistence.*;
 
