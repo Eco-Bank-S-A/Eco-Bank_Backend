@@ -46,6 +46,7 @@ public class JwtService {
             System.out.println("Dobry token");
             return JwtTokenData
                 .builder()
+                .token(token)
                 .isVerified(true)
                 .userEmail(payload.getSubject())
                 .issuedAt(payload.getIssuedAt())
@@ -53,9 +54,9 @@ public class JwtService {
                 .build();
 
         } catch (JwtException e) {
-            System.out.println("Zły token");
             return JwtTokenData
                 .builder()
+                .token(token)
                 .isVerified(false)
                 .build();
         }

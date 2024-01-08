@@ -7,10 +7,8 @@ import com.ecobank.api.models.authentication.RenewTokenRequest;
 import com.ecobank.api.services.AuthenticationService;
 import com.ecobank.api.services.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -53,14 +51,11 @@ public class AuthenticationController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/renew-token")
-    public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody RenewTokenRequest request) {
-        var tokenData = authenticationService.getTokenData(request.getToken());
-        if (tokenData.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
+    @GetMapping("/renew-token")
+    public ResponseEntity<AuthenticationResponse> authenticate() {
+        var token = SecurityContextHolder.getContext().getAuthentication();
 
-        var user = userService.getUserByEmail(tokenData.get().getUserEmail());
+        var user = userService.getUserByEmail(token.getName());
         var response = new AuthenticationResponse(authenticationService.createToken(user.get()));
 
         return ResponseEntity.ok(response);
