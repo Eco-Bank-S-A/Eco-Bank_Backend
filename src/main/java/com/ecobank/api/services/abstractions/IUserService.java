@@ -10,5 +10,5 @@ public interface IUserService {
     Optional<User> registerUser(RegisterRequest request);
 
     Optional<User> getUserByEmail (String email);
-
+    Optional<Object> getUserInfo(String email);
 }

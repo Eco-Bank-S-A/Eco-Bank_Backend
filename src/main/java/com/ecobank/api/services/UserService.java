@@ -1,20 +1,25 @@
 package com.ecobank.api.services;
 
+import com.ecobank.api.database.entities.Account;
 import com.ecobank.api.database.entities.User;
 import com.ecobank.api.database.repositories.IUserRepository;
 import com.ecobank.api.models.authentication.RegisterRequest;
+import com.ecobank.api.models.user.UserInfo;
 import com.ecobank.api.services.abstractions.IUserService;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
 public class UserService implements IUserService {
 
     private final IUserRepository repository;
+    private final AccountService accountService;
 
-    public UserService(IUserRepository repository) {
+    public UserService(IUserRepository repository, AccountService accountService) {
         this.repository = repository;
+        this.accountService = accountService;
     }
 
 
@@ -42,5 +47,15 @@ public class UserService implements IUserService {
 
     public Optional<User> getUserByEmail (String email) {
         return repository.findUserByEmail(email);
+    }
+
+    @Override
+    public Optional<Object> getUserInfo(String email) {
+        var userOptional = getUserByEmail(email);
+        User user = userOptional.orElseThrow(() -> new NoSuchElementException("User not found"));
+        var userAccountOptioanl = accountService.getAccountsByUserEmail(user.getEmail());
+        Account account = userAccountOptioanl.orElseThrow(() -> new NoSuchElementException("Account not found"));
+        var userInfo = new UserInfo(user, account);
+        return Optional.of(userInfo);
     }
 }
