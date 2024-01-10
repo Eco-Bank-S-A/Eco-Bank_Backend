@@ -36,6 +36,11 @@ public class AccountService implements IAccountService {
     }
 
     @Override
+    public Optional<Account> getAccountsByIBAN(String iban) {
+        return accountRepository.findAccountByIBAN(iban);
+    }
+
+    @Override
     public Optional<Account> createAccountForUser(String email, String accountTypeName) {
         var user = userRepository.findUserByEmail(email);
         if (user.isEmpty())
@@ -57,6 +62,23 @@ public class AccountService implements IAccountService {
         return Optional.of(account);
 
     }
+
+    @Override
+    public boolean tryChangeAmount(Account account, BigDecimal amount) {
+        var currentFreeFunds = account.getFreeFunds();
+        var currentBalance = account.getBalance();
+
+        if (amount.compareTo(BigDecimal.ZERO) < 0 &&
+                currentFreeFunds.compareTo(amount.abs()) < 0 &&
+                currentBalance.compareTo(amount.abs()) < 0) {
+            return false;
+        }
+
+        account.setFreeFunds(currentFreeFunds.add(amount));
+        account.setBalance(currentBalance.add(amount));
+        return true;
+    }
+
 
     public static String generateIban() {
         var accountNumber = generateRandomAccountNumber();
