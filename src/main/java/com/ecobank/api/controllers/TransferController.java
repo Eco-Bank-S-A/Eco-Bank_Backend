@@ -3,7 +3,6 @@ package com.ecobank.api.controllers;
 import com.ecobank.api.models.transfer.TransferRequest;
 import com.ecobank.api.services.AuthenticationService;
 import com.ecobank.api.services.TransferService;
-import com.ecobank.api.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
