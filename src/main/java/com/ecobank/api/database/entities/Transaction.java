@@ -1,10 +1,13 @@
 package com.ecobank.api.database.entities;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Entity
+@Data
 @Table(name = "transactions")
 public class Transaction {
 
@@ -14,6 +17,7 @@ public class Transaction {
 
     @Column(unique = true)
     private String uuid;
+    private String additionalInfo;
 
     @ManyToOne
     private Account sender;
