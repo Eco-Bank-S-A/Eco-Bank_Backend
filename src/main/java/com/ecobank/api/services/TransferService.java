@@ -2,14 +2,21 @@ package com.ecobank.api.services;
 
 import com.ecobank.api.database.entities.Account;
 import com.ecobank.api.database.entities.Transaction;
-import com.ecobank.api.database.entities.User;
 import com.ecobank.api.database.repositories.ITransactionRepository;
+import com.ecobank.api.models.transfer.TransferInfo;
+import com.ecobank.api.models.user.UserInfo;
 import com.ecobank.api.services.abstractions.ITransferService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 public class TransferService implements ITransferService {
     private final AccountService accountService;
@@ -29,7 +36,23 @@ public class TransferService implements ITransferService {
         createTransaction(account, recipientAccount, isOperationSuccessful ? 1 : 0, amount, 0L, Optional.ofNullable(title));
         return isOperationSuccessful;
     }
-    public Transaction createTransaction(Account sender, Account receiver, int status, BigDecimal balance, Long CO2, Optional<String> additionalInfo) {
+
+    public int countTransferHistory(String userEmail, int[] operationsTypes, LocalDateTime from, LocalDateTime to){
+        return transactionRepository.countTransactionHistory(userEmail, operationsTypes, from, to);
+    }
+    @Override
+    public List<TransferInfo> getTransferHistory(String userEmail, int[] operationsTypes, LocalDateTime from, LocalDateTime to, int batchSize, int batchNumber) {
+        Pageable batch = PageRequest.of(batchNumber, batchSize);
+        List<Transaction> transactions = transactionRepository.findTransactionHistory(userEmail, operationsTypes, from, to, batch);
+        return convertToTransferInfoList(transactions);
+    }
+
+    private List<TransferInfo> convertToTransferInfoList(List<Transaction> transactions) {
+        return transactions.stream()
+                .map(transaction -> new TransferInfo(transaction))
+                .collect(Collectors.toList());
+    }
+    private Transaction createTransaction(Account sender, Account receiver, int status, BigDecimal balance, Long CO2, Optional<String> additionalInfo) {
         Transaction transaction = new Transaction();
         transaction.setUuid(java.util.UUID.randomUUID().toString());
         transaction.setSender(sender);

@@ -3,8 +3,10 @@ package com.ecobank.api.database.entities;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -31,4 +33,6 @@ public class Transaction {
     private BigDecimal balance;
 
     private Long CO2;
+    @CreationTimestamp
+    private LocalDateTime creationDate;
 }

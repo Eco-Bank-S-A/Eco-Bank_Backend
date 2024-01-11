@@ -4,7 +4,7 @@ import com.ecobank.api.database.entities.Account;
 import com.ecobank.api.database.entities.User;
 import com.ecobank.api.database.repositories.IUserRepository;
 import com.ecobank.api.models.authentication.RegisterRequest;
-import com.ecobank.api.models.user.UserInfo;
+import com.ecobank.api.models.user.DetailUserInfo;
 import com.ecobank.api.services.abstractions.IUserService;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +55,7 @@ public class UserService implements IUserService {
         User user = userOptional.orElseThrow(() -> new NoSuchElementException("User not found"));
         var userAccountOptioanl = accountService.getAccountsByUserEmail(user.getEmail());
         Account account = userAccountOptioanl.orElseThrow(() -> new NoSuchElementException("Account not found"));
-        var userInfo = new UserInfo(user, account);
+        var userInfo = new DetailUserInfo(user, account);
         return Optional.of(userInfo);
     }
 }
