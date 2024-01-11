@@ -1,9 +1,12 @@
 package com.ecobank.api.controllers;
 
+import com.ecobank.api.models.chat.ChatMessageDto;
 import com.ecobank.api.models.websockets.ClientCo2Response;
 import com.ecobank.api.models.websockets.ClientRequest;
 import com.ecobank.api.models.websockets.ClientCommandResponse;
+import com.ecobank.api.services.ChatBroker;
 import com.ecobank.api.services.Co2StockRateService;
+import com.ecobank.api.services.abstractions.IChatSubscriber;
 import com.ecobank.api.services.abstractions.co2.ICo2Subscriber;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
@@ -14,13 +17,15 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 
 @Component
-public class WebSocketController extends TextWebSocketHandler implements ICo2Subscriber {
+public class WebSocketController extends TextWebSocketHandler implements ICo2Subscriber, IChatSubscriber {
 
     Co2StockRateService co2Service;
     private WebSocketSession session;
+    private  ChatBroker chatBroker;
 
-    public WebSocketController(Co2StockRateService co2Service) {
+    public WebSocketController(Co2StockRateService co2Service, ChatBroker chatBroker) {
         this.co2Service = co2Service;
+        this.chatBroker = chatBroker;
     }
 
 
@@ -29,6 +34,7 @@ public class WebSocketController extends TextWebSocketHandler implements ICo2Sub
             throws Exception {
 
         var mapper = new ObjectMapper();
+        System.out.println("TOKEN: " + session.getHandshakeHeaders().get("Authorization"));
 
         ClientRequest clientRequest;
         try {
@@ -44,13 +50,13 @@ public class WebSocketController extends TextWebSocketHandler implements ICo2Sub
         if (clientRequest.getCommand().equals("SUBSCRIBE_CO2")) {
             co2Service.subscribe(this);
             var response = mapper.writeValueAsString(new ClientCommandResponse("SUBSCRIBED_CO2"));
-
+            session.sendMessage(new TextMessage(response));
         }
 
         if (clientRequest.getCommand().equals("UNSUBSCRIBE_CO2")) {
             co2Service.unsubscribe(this);
             var response = mapper.writeValueAsString(new ClientCommandResponse("UNSUBSCRIBED_CO2"));
-
+            session.sendMessage(new TextMessage(response));
         }
 
 //        if (clientMessage.startsWith("hello") || clientMessage.startsWith("greet")) {
@@ -72,6 +78,7 @@ public class WebSocketController extends TextWebSocketHandler implements ICo2Sub
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         this.session = null;
         co2Service.unsubscribe(this);
+        chatBroker.unsubscribeAll(this);
         System.out.println("Connection closed. Status: " + status);
     }
 
@@ -92,5 +99,10 @@ public class WebSocketController extends TextWebSocketHandler implements ICo2Sub
         } catch (Exception e) {
             System.out.println("Error sending message to client");
         }
+    }
+
+    @Override
+    public void notify(ChatMessageDto dto) {
+
     }
 }

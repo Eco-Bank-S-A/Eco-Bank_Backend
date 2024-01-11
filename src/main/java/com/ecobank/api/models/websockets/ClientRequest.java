@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ClientRequest {
     private String command;
+    private String payload;
 }

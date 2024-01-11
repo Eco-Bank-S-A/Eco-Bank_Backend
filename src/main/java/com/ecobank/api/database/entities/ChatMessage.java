@@ -8,17 +8,20 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class Chat {
+@AllArgsConstructor
+@NoArgsConstructor
+public class ChatMessage {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
+    private String message;
 
     @ManyToOne
-    private User user1;
+    private Chat chat;
 
     @ManyToOne
-    private User user2;
+    private User sender;
+
 }

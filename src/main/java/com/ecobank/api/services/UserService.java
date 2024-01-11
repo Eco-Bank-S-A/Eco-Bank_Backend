@@ -61,6 +61,10 @@ public class UserService implements IUserService {
 
     @Override
     public void changeMaxCo2(User user, long maxCo2) {
+        if (maxCo2 < user.getCO2()) {
+            throw new IllegalArgumentException("Max CO2 cannot be lower than current CO2");
+        }
+
         user.setMaxCO2(maxCo2);
         repository.save(user);
     }

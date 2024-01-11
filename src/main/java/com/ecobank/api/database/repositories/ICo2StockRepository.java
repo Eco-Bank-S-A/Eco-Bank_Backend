@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface ICo2StockRepository extends CrudRepository<Co2Stock, Long> {
 
     Optional<Co2Stock> findById(long id);
-    ArrayList<Co2Stock> findByCreatedAtAfter(LocalDateTime date);
+    ArrayList<Co2Stock> findByCreatedAtAfterOrderByCreatedAt(LocalDateTime date);
 }

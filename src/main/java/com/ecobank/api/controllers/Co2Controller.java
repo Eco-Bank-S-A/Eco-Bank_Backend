@@ -32,7 +32,9 @@ public class Co2Controller {
 
     @GetMapping("/history")
     public ResponseEntity<ArrayList<Co2Stock>> getHistory() {
-        var co2Stocks = co2StockRepository.findByCreatedAtAfter(LocalDateTime.now(ZoneOffset.UTC).minusDays(14));
+        var co2Stocks = co2StockRepository.findByCreatedAtAfterOrderByCreatedAt(LocalDateTime.now(ZoneOffset.UTC).minusDays(14));
+
+        co2Stocks = new ArrayList<>(co2Stocks.subList(co2Stocks.size() - 400, co2Stocks.size()));
 
         return ResponseEntity.ok(co2Stocks);
     }
@@ -74,7 +76,14 @@ public class Co2Controller {
         transferService.transferFromBank(userEmail, "CO2 Stock", price);
 
         var user = userService.getUserByEmail(userEmail);
-        userService.changeMaxCo2(user.get(), user.get().getMaxCO2() - request.getAmount());
+
+        try {
+            userService.changeMaxCo2(user.get(), user.get().getMaxCO2() - request.getAmount());
+
+        } catch (Exception e) {
+            System.out.println("User has not enough CO2");
+            return ResponseEntity.badRequest().build();
+        }
 
         return ResponseEntity.ok().build();
     }
@@ -83,12 +92,13 @@ public class Co2Controller {
     private Optional<Co2Stock> getCurrentStock(long id) {
         var co2StockOptional = co2StockRepository.findById(id);
         if (co2StockOptional.isEmpty()) {
+            System.out.println("Stock not found");
             return Optional.empty();
         }
 
         var co2Stock = co2StockOptional.get();
 
-        var maxDiff = LocalDateTime.now(ZoneOffset.UTC).minusSeconds(30);
+        var maxDiff = LocalDateTime.now(ZoneOffset.UTC).minusSeconds(60*10);
         if (co2Stock.getCreatedAt().isBefore(maxDiff)) {
             System.out.println("Stock is too old");
             return Optional.empty();
