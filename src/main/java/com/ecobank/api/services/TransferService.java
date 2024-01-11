@@ -8,6 +8,9 @@ import com.ecobank.api.services.abstractions.ITransferService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 @Service
@@ -29,6 +32,13 @@ public class TransferService implements ITransferService {
         createTransaction(account, recipientAccount, isOperationSuccessful ? 1 : 0, amount, 0L, Optional.ofNullable(title));
         return isOperationSuccessful;
     }
+
+    @Override
+    public ArrayList<Transaction> getFinalizedTransactionsByAccount(Account account) {
+        return transactionRepository.findFinalizedTransactionsByAccount(account.getId());
+    }
+
+
     public Transaction createTransaction(Account sender, Account receiver, int status, BigDecimal balance, Long CO2, Optional<String> additionalInfo) {
         Transaction transaction = new Transaction();
         transaction.setUuid(java.util.UUID.randomUUID().toString());
@@ -37,6 +47,8 @@ public class TransferService implements ITransferService {
         transaction.setStatus(status);
         transaction.setBalance(balance);
         transaction.setCO2(CO2);
+        transaction.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
+
 
         additionalInfo.ifPresent(transaction::setAdditionalInfo);
 

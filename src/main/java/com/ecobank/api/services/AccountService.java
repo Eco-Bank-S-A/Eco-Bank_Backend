@@ -68,9 +68,7 @@ public class AccountService implements IAccountService {
         var currentFreeFunds = account.getFreeFunds();
         var currentBalance = account.getBalance();
 
-        if (amount.compareTo(BigDecimal.ZERO) < 0 &&
-                currentFreeFunds.compareTo(amount.abs()) < 0 &&
-                currentBalance.compareTo(amount.abs()) < 0) {
+        if (amount.compareTo(BigDecimal.ZERO) < 0 && currentFreeFunds.compareTo(amount.abs()) < 0) {
             return false;
         }
 
