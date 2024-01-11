@@ -58,4 +58,10 @@ public class UserService implements IUserService {
         var userInfo = new UserInfo(user, account);
         return Optional.of(userInfo);
     }
+
+    @Override
+    public void changeMaxCo2(User user, long maxCo2) {
+        user.setMaxCO2(maxCo2);
+        repository.save(user);
+    }
 }

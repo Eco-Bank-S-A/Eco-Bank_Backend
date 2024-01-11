@@ -4,6 +4,7 @@ import com.ecobank.api.models.authentication.AuthenticateRequest;
 import com.ecobank.api.models.authentication.AuthenticationResponse;
 import com.ecobank.api.models.authentication.RegisterRequest;
 import com.ecobank.api.models.authentication.RenewTokenRequest;
+import com.ecobank.api.services.AccountService;
 import com.ecobank.api.services.AuthenticationService;
 import com.ecobank.api.services.Co2StockRateService;
 import com.ecobank.api.services.UserService;
@@ -23,18 +24,13 @@ public class AuthenticationController {
     private final UserService userService;
     private final Co2StockRateService co2StockRateService;
 
-    public AuthenticationController(AuthenticationService authenticationService, UserService userService, Co2StockRateService co2StockRateService) {
+    private final AccountService accountService;
+
+    public AuthenticationController(AuthenticationService authenticationService, UserService userService, Co2StockRateService co2StockRateService, AccountService accountService) {
         this.authenticationService = authenticationService;
         this.userService = userService;
         this.co2StockRateService = co2StockRateService;
-    }
-
-
-    @GetMapping("/test")
-    public ResponseEntity<Optional<Double>> test() {
-//        var co2 = co2StockRateService.getCo2StockRate();
-//        return ResponseEntity.ok(co2);
-        return ResponseEntity.ok(Optional.empty());
+        this.accountService = accountService;
     }
 
     @PostMapping("/register")
@@ -46,6 +42,8 @@ public class AuthenticationController {
         if (user.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
+
+        accountService.createAccountForUser(user.get().getEmail(), "USER");
 
         var response = new AuthenticationResponse(authenticationService.createToken(user.get()));
 

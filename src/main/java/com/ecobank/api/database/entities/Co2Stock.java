@@ -18,7 +18,10 @@ public class Co2Stock {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    private Double co2StockRate;
+    private Double co2BuyStock;
+    private Double co2SellStock;
+
+
     @Column(name = "created_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime createdAt;
 }

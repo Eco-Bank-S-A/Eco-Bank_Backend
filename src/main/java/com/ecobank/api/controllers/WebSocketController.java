@@ -76,9 +76,16 @@ public class WebSocketController extends TextWebSocketHandler implements ICo2Sub
     }
 
     @Override
-    public void notify(double co2StockRate) {
+    public void notify(long id, double co2BuyStock, double co2SellStock) {
         var mapper = new ObjectMapper();
-        var response = new ClientCo2Response("CO2_RATE", co2StockRate);
+        var response = ClientCo2Response
+            .builder()
+            .command("CO2_RATE")
+            .id(id)
+            .co2BuyStock(co2BuyStock)
+            .co2SellStock(co2SellStock)
+            .build();
+
         try {
             var message = mapper.writeValueAsString(response);
             session.sendMessage(new TextMessage(message));

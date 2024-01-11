@@ -11,4 +11,6 @@ public interface IUserService {
 
     Optional<User> getUserByEmail (String email);
     Optional<Object> getUserInfo(String email);
+
+    void changeMaxCo2(User user, long maxCo2);
 }

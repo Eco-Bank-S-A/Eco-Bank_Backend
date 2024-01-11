@@ -12,6 +12,9 @@ public interface IAccountService {
     Optional<Account> getAccountsByIBAN(String iban);
 
     Optional<Account> createAccountForUser(String email, String currency);
+
+    Account getBankAccount();
+
     boolean tryChangeAmount(Account account, BigDecimal amount);
 
 }

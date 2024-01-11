@@ -9,10 +9,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class Co2StockRateService {
@@ -27,7 +29,7 @@ public class Co2StockRateService {
         repository = co2StockRepository;
     }
 
-    @Scheduled(fixedRate = 5000*100000)
+    @Scheduled(fixedRate = 10000)
     public void co2StockRatePuller() {
         Co2StockPriceResponse result;
         try {
@@ -38,19 +40,23 @@ public class Co2StockRateService {
             return;
         }
 
+        var rand = new Random();
+        var sellStock = BigDecimal.valueOf(result.getValue() * rand.nextDouble(0.9, 0.99)).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
 
-        System.out.println(result.getValue());
         var stock = Co2Stock
             .builder()
-            .co2StockRate(result.getValue())
+            .co2BuyStock(result.getValue())
+            .co2SellStock(sellStock)
             .createdAt(LocalDateTime.now(ZoneOffset.UTC))
             .build();
 
-        repository.save(stock);
+        stock = repository.save(stock);
 
         for (var subscriber : subscribers) {
-            subscriber.notify(result.getValue());
+            subscriber.notify(stock.getId(), stock.getCo2BuyStock(), stock.getCo2SellStock());
         }
+
+        System.out.println("Buy: " + stock.getCo2BuyStock() + " Sell: " + stock.getCo2SellStock());
     }
 
     public void subscribe(ICo2Subscriber subscriber) {

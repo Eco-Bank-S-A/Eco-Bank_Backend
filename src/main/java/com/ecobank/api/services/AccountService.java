@@ -45,14 +45,15 @@ public class AccountService implements IAccountService {
         var user = userRepository.findUserByEmail(email);
         if (user.isEmpty())
             return Optional.empty();
-        var accountType = accountTypeRepository.findAccountTypeByType("Normal");
+        var accountType = accountTypeRepository.findAccountTypeByType(accountTypeName);
         if (accountType.isEmpty())
             return Optional.empty();
+
 
         var account = Account.builder()
                 .balance(new BigDecimal(0))
                 .IBAN(generateIban())
-                .currency("PLN")
+                .currency("EURO")
                 .freeFunds(new BigDecimal(0))
                 .user(user.get())
                 .accountType(accountType.get())
@@ -61,6 +62,11 @@ public class AccountService implements IAccountService {
         accountRepository.save(account);
         return Optional.of(account);
 
+    }
+
+    @Override
+    public Account getBankAccount() {
+        return accountRepository.findAccountByIBAN(Constants.BankAccountIBAN).get();
     }
 
     @Override
@@ -74,6 +80,7 @@ public class AccountService implements IAccountService {
 
         account.setFreeFunds(currentFreeFunds.add(amount));
         account.setBalance(currentBalance.add(amount));
+        accountRepository.save(account);
         return true;
     }
 

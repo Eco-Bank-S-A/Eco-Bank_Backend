@@ -1,8 +1,10 @@
 package com.ecobank.api.services;
 
+import com.ecobank.api.Constants;
 import com.ecobank.api.database.entities.Account;
 import com.ecobank.api.database.entities.Transaction;
 import com.ecobank.api.database.entities.User;
+import com.ecobank.api.database.repositories.IAccountRepository;
 import com.ecobank.api.database.repositories.ITransactionRepository;
 import com.ecobank.api.services.abstractions.ITransferService;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,7 @@ import java.util.Optional;
 public class TransferService implements ITransferService {
     private final AccountService accountService;
     private final ITransactionRepository transactionRepository;
-    public TransferService(AccountService accountService, ITransactionRepository transactionRepository){
+    public TransferService(AccountService accountService, ITransactionRepository transactionRepository) {
         this.accountService = accountService;
         this.transactionRepository = transactionRepository;
     }
@@ -31,6 +33,21 @@ public class TransferService implements ITransferService {
         var isOperationSuccessful = tryFinalizeTransfers(account, recipientAccount, amount);
         createTransaction(account, recipientAccount, isOperationSuccessful ? 1 : 0, amount, 0L, Optional.ofNullable(title));
         return isOperationSuccessful;
+    }
+
+    @Override
+    public boolean transferToBank(String userEmail, String title, BigDecimal amount) {
+        return transferMoney(userEmail, Constants.BankAccountIBAN, title, amount);
+    }
+
+    @Override
+    public boolean transferFromBank(String userEmail, String title, BigDecimal amount) {
+        var optionalAccount = accountService.getAccountsByUserEmail(userEmail);
+        Account account = optionalAccount.orElseThrow(() -> new NoSuchElementException("Account not found"));
+        accountService.tryChangeAmount(account, amount);
+
+        createTransaction(account, accountService.getBankAccount(),1, amount, 0L, Optional.ofNullable(title));
+        return true;
     }
 
     @Override

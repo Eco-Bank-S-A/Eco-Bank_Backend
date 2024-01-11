@@ -12,5 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ClientCo2Response {
     private String command;
-    private double co2StockRate;
+    private long id;
+    private double co2BuyStock;
+    private double co2SellStock;
 }

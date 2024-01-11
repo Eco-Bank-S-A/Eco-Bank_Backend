@@ -71,8 +71,17 @@ public class TransferController {
     }
     @PostMapping("/pay")
     public ResponseEntity<Object> pay(@RequestBody TransferRequest transferRequest) {
+        System.out.println(transferRequest.getRecipientIBAN());
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        boolean success = transferService.transferMoney(userEmail, transferRequest.getRecipientIBAN(), transferRequest.getTitle(), transferRequest.getAmount());
+
+        boolean success;
+        try {
+            success = transferService.transferMoney(userEmail, transferRequest.getRecipientIBAN(), transferRequest.getTitle(), transferRequest.getAmount());
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+
 
         if (success) {
             return ResponseEntity.ok("Payment successful");
