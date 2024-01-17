@@ -1,7 +1,7 @@
 package com.ecobank.api.database.entities;
 
+import com.ecobank.api.database.enums.TransactionStatus;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -26,7 +26,8 @@ public class Transaction {
     @ManyToOne
     private Account receiver;
 
-    private int status;
+    @Enumerated(EnumType.ORDINAL)
+    private TransactionStatus status;
 
     @Column(precision = 10, scale = 2)
     private BigDecimal balance;

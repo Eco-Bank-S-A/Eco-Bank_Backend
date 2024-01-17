@@ -16,6 +16,7 @@ public class AppConfiguration {
         return new JwtAuthenticationProvider(jwtService);
     }
 
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
