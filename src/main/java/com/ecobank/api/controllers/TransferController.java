@@ -18,6 +18,9 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.math.BigDecimal;
+
+import com.ecobank.api.services.AiService;
 
 @RestController
 @RequestMapping("/api/transfer")
@@ -29,13 +32,15 @@ public class TransferController {
     private final IAccountService accountService;
     private final ICompanyService companyService;
 
-    public TransferController(IAuthenticationService authenticationService, ITransferService transferService, IAccountService accountService,
-                              ICompanyService companyService, IUserService userService) {
+    private final AiService aiService;
+
+    public TransferController(IAuthenticationService authenticationService, ITransferService transferService, IAccountService accountService, ICompanyService companyService, IUserService userService, AiService aiService) {
         this.authenticationService = authenticationService;
         this.transferService = transferService;
         this.accountService = accountService;
         this.companyService = companyService;
         this.userService = userService;
+        this.aiService = aiService;
     }
 
     @GetMapping()
@@ -141,9 +146,23 @@ public class TransferController {
         var account = accountService.getAccountsByUserEmail(userEmail);
         var recipientAccount = accountService.getAccountsByIBAN(transferRequest.getRecipientIBAN());
 
+        BigDecimal balance = account.get().getBalance();
+        BigDecimal amount = transferRequest.getAmount();
+        final int creditScore = 50;
+
+        //System.out.println("________");
+        //System.out.println(balance);
+        //System.out.println(amount);
+
         if(account.isEmpty() || recipientAccount.isEmpty()){
             return new ResponseEntity<>("Nie znaleziono konta", HttpStatus.NOT_FOUND);
         }
+
+        if(aiService.predictFraud(balance, creditScore, amount)) {
+            System.out.println("Online fraud detected!");
+            return ResponseEntity.status(451).body("Online fraud detected, payment cancelled!");
+        }
+
         var isTransferSuccessful = transferService.tryTransferMoney(account.get(), recipientAccount.get(), transferRequest.getAmount());
         transferService.createTransaction(account.get(), recipientAccount.get(), isTransferSuccessful ? TransactionStatus.APPROVED : TransactionStatus.REJECTED, transferRequest.getAmount(), 0L, Optional.ofNullable(transferRequest.getTitle()));
 
