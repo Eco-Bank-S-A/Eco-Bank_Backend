@@ -1,16 +1,11 @@
 package com.ecobank.api.services;
 
-import com.ecobank.api.controllers.WebSocketController;
 import com.ecobank.api.database.entities.Co2Stock;
 import com.ecobank.api.database.repositories.ICo2StockRepository;
 import com.ecobank.api.models.co2.Co2StockPriceResponse;
-import com.ecobank.api.services.abstractions.co2.ICo2Subscriber;
+import com.ecobank.api.services.abstractions.ICo2StockRateService;
 import com.ecobank.api.services.subscribers.Co2Subscriber;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,12 +14,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
-public class Co2StockRateService {
+public class Co2StockRateService implements ICo2StockRateService {
 
     @Value("${application.co2.api}")
     private String uri;
@@ -37,6 +30,7 @@ public class Co2StockRateService {
         repository = co2StockRepository;
     }
 
+    @Override
     @Scheduled(fixedRate = 5000)
     public void co2StockRatePuller() {
         Co2StockPriceResponse result;
@@ -67,6 +61,7 @@ public class Co2StockRateService {
         System.out.println("Buy: " + stock.getCo2BuyStock() + " Sell: " + stock.getCo2SellStock());
     }
 
+    @Override
     public void subscribe(Co2Subscriber subscriber) {
         for (var sub : subscribers) {
             if (sub.getSessionId().equals(subscriber.getSessionId())) {
@@ -77,6 +72,7 @@ public class Co2StockRateService {
         subscribers.add(subscriber);
     }
 
+    @Override
     public void unsubscribe(String connectionId) {
         for (var sub : subscribers) {
             if (sub.getSessionId().equals(connectionId)) {

@@ -1,10 +1,8 @@
 package com.ecobank.api.services;
 
-import com.ecobank.api.database.entities.Co2Stock;
 import com.ecobank.api.models.ai.AiFraudResponse;
-import com.ecobank.api.models.co2.Co2StockPriceResponse;
+import com.ecobank.api.services.abstractions.IAiService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -13,10 +11,9 @@ import java.math.BigDecimal;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
-import org.springframework.web.client.RestTemplate;
 
 @Service
-public class AiService {
+public class AiService implements IAiService {
 
     @Value("${application.ai.api}")
     private String uri;

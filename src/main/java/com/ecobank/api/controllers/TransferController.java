@@ -32,9 +32,9 @@ public class TransferController {
     private final IAccountService accountService;
     private final ICompanyService companyService;
 
-    private final AiService aiService;
+    private final IAiService aiService;
 
-    public TransferController(IAuthenticationService authenticationService, ITransferService transferService, IAccountService accountService, ICompanyService companyService, IUserService userService, AiService aiService) {
+    public TransferController(IAuthenticationService authenticationService, ITransferService transferService, IAccountService accountService, ICompanyService companyService, IUserService userService, IAiService aiService) {
         this.authenticationService = authenticationService;
         this.transferService = transferService;
         this.accountService = accountService;

@@ -8,6 +8,8 @@ import com.ecobank.api.services.AccountService;
 import com.ecobank.api.services.AuthenticationService;
 import com.ecobank.api.services.Co2StockRateService;
 import com.ecobank.api.services.UserService;
+import com.ecobank.api.services.abstractions.IAuthenticationService;
+import com.ecobank.api.services.abstractions.IUserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
@@ -20,16 +22,14 @@ import java.util.Optional;
 @RequestMapping("/api/auth")
 public class AuthenticationController {
 
-    private final AuthenticationService authenticationService;
-    private final UserService userService;
-    private final Co2StockRateService co2StockRateService;
+    private final IAuthenticationService authenticationService;
+    private final IUserService userService;
 
     private final AccountService accountService;
 
-    public AuthenticationController(AuthenticationService authenticationService, UserService userService, Co2StockRateService co2StockRateService, AccountService accountService) {
+    public AuthenticationController(IAuthenticationService authenticationService, IUserService userService, AccountService accountService) {
         this.authenticationService = authenticationService;
         this.userService = userService;
-        this.co2StockRateService = co2StockRateService;
         this.accountService = accountService;
     }
 

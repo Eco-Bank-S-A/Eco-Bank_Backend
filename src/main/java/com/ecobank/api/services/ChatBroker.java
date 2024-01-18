@@ -1,19 +1,18 @@
 package com.ecobank.api.services;
 
-import com.ecobank.api.controllers.WebSocketController;
 import com.ecobank.api.models.chat.ChatMessageDto;
-import com.ecobank.api.services.abstractions.IChatSubscriber;
+import com.ecobank.api.services.abstractions.IChatBroker;
 import com.ecobank.api.services.subscribers.ChatSubscriber;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 
 @Service
-public class ChatBroker {
+public class ChatBroker implements IChatBroker {
     private HashMap<Long, ArrayList<ChatSubscriber>> subscribers = new HashMap<>();
 
+    @Override
     public void publish(String senderEmail, ChatMessageDto dto) {
         if (!subscribers.containsKey(dto.getChatId())) {
             return;
@@ -30,6 +29,7 @@ public class ChatBroker {
     }
 
 
+    @Override
     public void subscribe(long chatId, ChatSubscriber subscriber) {
         if (!subscribers.containsKey(chatId)) {
             subscribers.put(chatId, new ArrayList<>());
@@ -38,6 +38,7 @@ public class ChatBroker {
         subscribers.get(chatId).add(subscriber);
     }
 
+    @Override
     public void unsubscribe(long chatId, String sessionId) {
         if (!subscribers.containsKey(chatId)) {
             return;
@@ -53,6 +54,7 @@ public class ChatBroker {
         }
     }
 
+    @Override
     public void unsubscribeAll(String sessionId) {
         for (var entry : subscribers.entrySet()) {
             for (var subscriber : entry.getValue()) {

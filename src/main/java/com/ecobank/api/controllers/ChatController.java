@@ -9,6 +9,7 @@ import com.ecobank.api.models.chat.AddMessageRequest;
 import com.ecobank.api.models.chat.ChatDto;
 import com.ecobank.api.models.chat.ChatMessageDto;
 import com.ecobank.api.services.ChatBroker;
+import com.ecobank.api.services.abstractions.IChatBroker;
 import com.ecobank.api.services.abstractions.IUserService;
 import org.apache.logging.log4j.message.Message;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +26,9 @@ public class ChatController {
     private IChatRepository chatRepository;
     private IChatMessageRepository chatMessageRepository;
     private IUserService userService;
-    private ChatBroker broker;
+    private IChatBroker broker;
 
-    public ChatController(IChatRepository chatRepository, IChatMessageRepository chatMessageRepository, IUserService userService, ChatBroker broker) {
+    public ChatController(IChatRepository chatRepository, IChatMessageRepository chatMessageRepository, IUserService userService, IChatBroker broker) {
         this.chatRepository = chatRepository;
         this.chatMessageRepository = chatMessageRepository;
         this.userService = userService;

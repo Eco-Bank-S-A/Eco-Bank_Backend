@@ -6,6 +6,7 @@ import com.ecobank.api.models.authentication.AuthenticateRequest;
 import com.ecobank.api.services.AccountService;
 import com.ecobank.api.services.AuthenticationService;
 import com.ecobank.api.services.UserService;
+import com.ecobank.api.services.abstractions.IAccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,13 +15,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/account")
 public class    AccountController {
-    private final UserService userService;
-    private final AccountService accountService;
-
-
-    public AccountController(UserService userService, AccountService accountService) {
+    private final IAccountService accountService;
+    public AccountController(UserService userService, IAccountService accountService) {
         this.accountService = accountService;
-        this.userService = userService;
     }
     @PostMapping("")
     public Object CreateAccount() {

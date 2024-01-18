@@ -5,6 +5,8 @@ import com.ecobank.api.models.websockets.ClientCommandResponse;
 import com.ecobank.api.services.ChatBroker;
 import com.ecobank.api.services.Co2StockRateService;
 import com.ecobank.api.services.JwtService;
+import com.ecobank.api.services.abstractions.IChatBroker;
+import com.ecobank.api.services.abstractions.ICo2StockRateService;
 import com.ecobank.api.services.subscribers.ChatSubscriber;
 import com.ecobank.api.services.subscribers.Co2Subscriber;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,13 +22,12 @@ import java.util.HashMap;
 @Component
 public class WebSocketController extends TextWebSocketHandler {
 
-    Co2StockRateService co2Service;
-
+    private ICo2StockRateService co2Service;
     private HashMap<String, WebSocketSession> sessions = new HashMap<>();
-    private  ChatBroker chatBroker;
+    private IChatBroker chatBroker;
     private JwtService jwtService;
 
-    public WebSocketController(Co2StockRateService co2Service, ChatBroker chatBroker, JwtService jwtService) {
+    public WebSocketController(ICo2StockRateService co2Service, IChatBroker chatBroker, JwtService jwtService) {
         this.co2Service = co2Service;
         this.chatBroker = chatBroker;
         this.jwtService = jwtService;
