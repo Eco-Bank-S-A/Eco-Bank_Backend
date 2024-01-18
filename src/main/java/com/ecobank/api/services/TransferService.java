@@ -66,7 +66,7 @@ public class TransferService implements ITransferService {
         return transactionRepository.save(transaction);
     }
     @Override
-    public  boolean tryTransferMoney(Account account, Account recipientAccount, BigDecimal amount){
+    public boolean tryTransferMoney(Account account, Account recipientAccount, BigDecimal amount){
         if(!accountService.tryChangeAmount(account, amount.multiply(new BigDecimal(-1)))){
             return false;
         }
