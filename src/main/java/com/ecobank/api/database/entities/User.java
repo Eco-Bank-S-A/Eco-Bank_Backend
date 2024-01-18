@@ -27,8 +27,6 @@ public class User {
 
     private String email;
     private String password;
-
-
     private Long CO2;
     private Long maxCO2;
 }
