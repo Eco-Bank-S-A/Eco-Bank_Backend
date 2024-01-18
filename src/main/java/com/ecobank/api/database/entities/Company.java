@@ -1,8 +1,10 @@
 package com.ecobank.api.database.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 @Table(name = "companies")
 public class Company {
     @Id
@@ -13,6 +15,7 @@ public class Company {
     private String regon;
     private String nip;
     private String krs;
+    private String callbackUrl;
 
     private int CO2Factor;
 }

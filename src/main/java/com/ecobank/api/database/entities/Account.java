@@ -25,6 +25,11 @@ public class Account {
     @Column(precision = 10, scale = 2)
     private BigDecimal balance;
 
+    // Sorki :)
+    //public BigDecimal getBalance() {
+    //    return this.balance;
+    //}
+
     @Column(precision = 10, scale = 2)
     private BigDecimal freeFunds;
     @ManyToOne(cascade = CascadeType.ALL)
