@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
-public class ClientCo2Response {
-    private String command;
+public class WebsocketCo2Data {
     private long id;
     private double co2BuyStock;
     private double co2SellStock;

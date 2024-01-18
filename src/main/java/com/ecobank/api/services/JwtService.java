@@ -43,7 +43,7 @@ public class JwtService {
                     .parseSignedClaims(token)
                     .getPayload();
 
-            System.out.println("Dobry token");
+
             return JwtTokenData
                 .builder()
                 .token(token)

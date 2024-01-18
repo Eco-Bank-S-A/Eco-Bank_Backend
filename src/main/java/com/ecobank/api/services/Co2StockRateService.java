@@ -1,10 +1,16 @@
 package com.ecobank.api.services;
 
+import com.ecobank.api.controllers.WebSocketController;
 import com.ecobank.api.database.entities.Co2Stock;
 import com.ecobank.api.database.repositories.ICo2StockRepository;
 import com.ecobank.api.models.co2.Co2StockPriceResponse;
 import com.ecobank.api.services.abstractions.co2.ICo2Subscriber;
+import com.ecobank.api.services.subscribers.Co2Subscriber;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.Random;
 
@@ -22,14 +29,15 @@ public class Co2StockRateService {
     @Value("${application.co2.api}")
     private String uri;
 
-    private ArrayList<ICo2Subscriber> subscribers = new ArrayList<>();
+    private ArrayList<Co2Subscriber> subscribers = new ArrayList<>();
 
     ICo2StockRepository repository;
+
     public Co2StockRateService(ICo2StockRepository co2StockRepository) {
         repository = co2StockRepository;
     }
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 5000)
     public void co2StockRatePuller() {
         Co2StockPriceResponse result;
         try {
@@ -53,20 +61,28 @@ public class Co2StockRateService {
         stock = repository.save(stock);
 
         for (var subscriber : subscribers) {
-            subscriber.notify(stock.getId(), stock.getCo2BuyStock(), stock.getCo2SellStock());
+            subscriber.notifyCo2(stock.getId(), stock.getCo2BuyStock(), stock.getCo2SellStock());
         }
 
         System.out.println("Buy: " + stock.getCo2BuyStock() + " Sell: " + stock.getCo2SellStock());
     }
 
-    public void subscribe(ICo2Subscriber subscriber) {
-        if (subscribers.contains(subscriber)) {
-            return;
+    public void subscribe(Co2Subscriber subscriber) {
+        for (var sub : subscribers) {
+            if (sub.getSessionId().equals(subscriber.getSessionId())) {
+                return;
+            }
         }
+
         subscribers.add(subscriber);
     }
 
-    public void unsubscribe(ICo2Subscriber subscriber) {
-        subscribers.remove(subscriber);
+    public void unsubscribe(String connectionId) {
+        for (var sub : subscribers) {
+            if (sub.getSessionId().equals(connectionId)) {
+                subscribers.remove(sub);
+                return;
+            }
+        }
     }
 }

@@ -120,7 +120,7 @@ public class ChatController {
 
         newMessage = chatMessageRepository.save(newMessage);
 
-        broker.publish(ChatMessageDto.builder()
+        broker.publish(userEmail, ChatMessageDto.builder()
                         .id(newMessage.getId())
                         .chatId(newMessage.getChat().getId())
                         .message(newMessage.getMessage())
