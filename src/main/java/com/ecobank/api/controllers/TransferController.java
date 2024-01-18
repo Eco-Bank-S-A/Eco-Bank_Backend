@@ -8,26 +8,31 @@ import com.ecobank.api.models.transfer.TransferRequest;
 import com.ecobank.api.services.AccountService;
 import com.ecobank.api.services.AuthenticationService;
 import com.ecobank.api.services.TransferService;
+import com.ecobank.api.services.AiService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/transfer")
 public class TransferController {
-
     private final AuthenticationService authenticationService;
     private final TransferService transferService;
 
     private final AccountService accountService;
 
-    public TransferController(AuthenticationService authenticationService, TransferService transferService, AccountService accountService) {
+    private final AiService aiService;
+
+    public TransferController(AuthenticationService authenticationService, TransferService transferService, AccountService accountService, AiService aiService) {
         this.authenticationService = authenticationService;
         this.transferService = transferService;
         this.accountService = accountService;
+        this.aiService = aiService;
     }
 
     @GetMapping()
@@ -75,13 +80,22 @@ public class TransferController {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 
         boolean success;
+
+        Optional<Account> account = accountService.getAccountsByUserEmail(userEmail);
+        BigDecimal balance = account.get().getBalance();
+        BigDecimal amount = transferRequest.getAmount();
+        final int creditScore = 50;
+
         try {
-            success = transferService.transferMoney(userEmail, transferRequest.getRecipientIBAN(), transferRequest.getTitle(), transferRequest.getAmount());
+            if(aiService.predictFraud(balance, creditScore, amount)) {
+                System.out.println("Online fraud detected!");
+                return ResponseEntity.status(451).body("Online fraud detected, payment cancelled!");
+            }
+            success = transferService.transferMoney(userEmail, transferRequest.getRecipientIBAN(), transferRequest.getTitle(), amount);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
-
 
         if (success) {
             return ResponseEntity.ok("Payment successful");

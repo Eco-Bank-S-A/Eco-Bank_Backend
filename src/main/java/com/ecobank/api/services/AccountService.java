@@ -46,7 +46,7 @@ public class AccountService implements IAccountService {
         if (user.isEmpty())
             return Optional.empty();
         var accountType = accountTypeRepository.findAccountTypeByType(accountTypeName);
-        if (accountType.isPresent())
+        if (accountType.isEmpty())
             return Optional.empty();
 
 
