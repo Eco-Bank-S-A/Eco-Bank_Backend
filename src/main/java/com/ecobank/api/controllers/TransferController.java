@@ -148,7 +148,7 @@ public class TransferController {
 
         BigDecimal balance = account.get().getBalance();
         BigDecimal amount = transferRequest.getAmount();
-        final int creditScore = 50;
+        final int creditScore = aiService.getCreditScore(recipientAccount.get());
 
         //System.out.println("________");
         //System.out.println(balance);
