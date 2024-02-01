@@ -26,9 +26,9 @@ public class TransferService implements ITransferService {
     public boolean transferFromBank(String userEmail, String title, BigDecimal amount) {
         var optionalAccount = accountService.getAccountsByUserEmail(userEmail);
         Account account = optionalAccount.orElseThrow(() -> new NoSuchElementException("Account not found"));
-        accountService.tryChangeAmount(account, amount);
+        var isTransactionSuccessful = accountService.tryChangeAmount(account, amount);
 
-        createTransaction(account, accountService.getBankAccount(),TransactionStatus.APPROVED, amount, 0L, Optional.ofNullable(title));
+        createTransaction(account, accountService.getBankAccount(),isTransactionSuccessful ? TransactionStatus.APPROVED : TransactionStatus.REJECTED, amount, 0L, Optional.ofNullable(title));
         return true;
     }
 
