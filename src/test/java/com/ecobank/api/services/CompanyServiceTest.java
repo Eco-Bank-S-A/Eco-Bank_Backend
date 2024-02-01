@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.stubbing.OngoingStubbing;
 
 import java.math.BigDecimal;
 
@@ -29,12 +30,12 @@ class CompanyServiceTest {
     @Test
     void calculateCO2() {
         Company company = mock(Company.class);
-        BigDecimal amount = BigDecimal.valueOf(1000); // Example amount
-        when(company.getCO2Factor()).thenReturn(10); // Example CO2 factor
+        BigDecimal amount = BigDecimal.valueOf(1000);
+        OngoingStubbing<Integer> integerOngoingStubbing = when(company.getCO2Factor()).thenReturn(10);
         Long calculatedCO2 = companyService.calculateCO2(company, amount);
-        Long expectedCO2 = 10000L; // Expected CO2 amount
+        Long expectedCO2 = 10000L;
         assertEquals(expectedCO2, calculatedCO2, "The calculated CO2 amount should be correct");
 
-        verify(company, times(1)).getCO2Factor(); // Verify getCO2Factor was called
+        verify(company, times(1)).getCO2Factor();
     }
 }
