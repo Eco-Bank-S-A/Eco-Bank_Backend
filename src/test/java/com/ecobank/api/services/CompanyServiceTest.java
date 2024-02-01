@@ -31,7 +31,7 @@ class CompanyServiceTest {
     void calculateCO2() {
         Company company = mock(Company.class);
         BigDecimal amount = BigDecimal.valueOf(1000);
-        OngoingStubbing<Integer> integerOngoingStubbing = when(company.getCO2Factor()).thenReturn(10);
+        when(company.getCO2Factor()).thenReturn(10);
         Long calculatedCO2 = companyService.calculateCO2(company, amount);
         Long expectedCO2 = 10000L;
         assertEquals(expectedCO2, calculatedCO2, "The calculated CO2 amount should be correct");
